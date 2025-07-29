@@ -1,20 +1,21 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 
 public class Journal
 {
-    private List<Entry> entries = new List<Entry>();
+    private List<Entry> _entries = new List<Entry>();
 
     public void AddEntry(Entry entry)
     {
-        entries.Add(entry);
+        _entries.Add(entry);
     }
 
-    public void DisplayEntries()
+    public void DisplayAllEntries()
     {
-        foreach (var entry in entries)
+        foreach (Entry entry in _entries)
         {
-            Console.WriteLine(entry);
+            Console.WriteLine(entry.GetFormattedEntry());
         }
     }
 
@@ -22,19 +23,20 @@ public class Journal
     {
         using (StreamWriter writer = new StreamWriter(filename))
         {
-            foreach (var entry in entries)
+            foreach (Entry entry in _entries)
             {
-                writer.WriteLine(entry.ToFileFormat());
+                writer.WriteLine(entry.GetEntryForFile());
             }
         }
     }
 
     public void LoadFromFile(string filename)
     {
-        entries.Clear();
-        foreach (var line in File.ReadAllLines(filename))
+        _entries.Clear();
+        string[] lines = File.ReadAllLines(filename);
+        foreach (string line in lines)
         {
-            entries.Add(Entry.FromFileFormat(line));
+            _entries.Add(Entry.FromFileLine(line));
         }
     }
 }

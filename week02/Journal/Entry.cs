@@ -1,31 +1,31 @@
 public class Entry
 {
-    public string Date { get; set; }
-    public string Prompt { get; set; }
-    public string Response { get; set; }
-    public string Mood { get; set; } // New creative addition
+    public string _date;
+    public string _prompt;
+    public string _response;
+    public string _mood;
 
     public Entry(string prompt, string response, string mood)
     {
-        Date = DateTime.Now.ToString("yyyy-MM-dd");
-        Prompt = prompt;
-        Response = response;
-        Mood = mood;
+        _date = DateTime.Now.ToShortDateString();
+        _prompt = prompt;
+        _response = response;
+        _mood = mood;
     }
 
-    public override string ToString()
+    public string GetFormattedEntry()
     {
-        return $"Date: {Date}\nMood: {Mood}\nPrompt: {Prompt}\nResponse: {Response}\n";
+        return $"Date: {_date}\nMood: {_mood}\nPrompt: {_prompt}\nResponse: {_response}\n";
     }
 
-    public string ToFileFormat()
+    public string GetEntryForFile()
     {
-        return $"{Date}|{Mood}|{Prompt}|{Response}";
+        return $"{_date}|{_mood}|{_prompt}|{_response}";
     }
 
-    public static Entry FromFileFormat(string line)
+    public static Entry FromFileLine(string line)
     {
-        var parts = line.Split('|');
-        return new Entry(parts[2], parts[3], parts[1]) { Date = parts[0] };
+        string[] parts = line.Split('|');
+        return new Entry(parts[2], parts[3], parts[1]) { _date = parts[0] };
     }
 }
