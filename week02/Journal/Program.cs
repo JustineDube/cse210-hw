@@ -1,61 +1,111 @@
 using System;
+using System.Collections.Generic;
+
+// EXCEEDS CORE REQUIREMENTS:
+// I added a mood selector to each journal entry (e.g., Happy, Sad, Grateful).
+// The mood is saved and displayed along with each entry.
 
 class Program
 {
+    static List<string> prompts = new List<string>()
+    {
+        "Who was the most interesting person I interacted with today?",
+        "What was the best part of my day?",
+        "How did I see the hand of the Lord in my life today?",
+        "What was the strongest emotion I felt today?",
+        "If I had one thing I could do over today, what would it be?"
+    };
+
+    static List<string> moods = new List<string>()
+    {
+        "Happy", "Sad", "Grateful", "Stressed", "Excited"
+    };
+
     static void Main(string[] args)
     {
         Journal journal = new Journal();
-        PromptGenerator promptGenerator = new PromptGenerator();
-        int quit = 0;
-        int choice;
-        do
-        {
-            Console.WriteLine("Main Menu: ");
-            Console.WriteLine("1. Write a new entry");
-            Console.WriteLine("2. Display all entries");
-            Console.WriteLine("3. Save entries to file");
-            Console.WriteLine("4. Load entries from file");
-            Console.WriteLine("5. Quit");
-            choice = int.Parse(Console.ReadLine());
+        bool running = true;
 
-            if (choice < 0 || choice > 5)
+        while (running)
+        {
+            Console.WriteLine("\nJournal Menu:");
+            Console.WriteLine("1. Write a new entry");
+            Console.WriteLine("2. Display journal");
+            Console.WriteLine("3. Save journal to file");
+            Console.WriteLine("4. Load journal from file");
+            Console.WriteLine("5. Exit");
+            Console.Write("Choose an option: ");
+            string choice = Console.ReadLine();
+
+            switch (choice)
             {
-                Console.WriteLine("Invalid choise");
+                case "1":
+                    WriteEntry(journal);
+                    break;
+
+                case "2":
+                    journal.DisplayEntries();
+                    break;
+
+                case "3":
+                    Console.Write("Enter filename to save: ");
+                    string saveFile = Console.ReadLine();
+                    journal.SaveToFile(saveFile);
+                    break;
+
+                case "4":
+                    Console.Write("Enter filename to load: ");
+                    string loadFile = Console.ReadLine();
+                    journal.LoadFromFile(loadFile);
+                    break;
+
+                case "5":
+                    running = false;
+                    break;
+
+                default:
+                    Console.WriteLine("Invalid choice. Please select a valid option.");
+                    break;
             }
-            else if (choice == 1)
+        }
+    }
+
+    static void WriteEntry(Journal journal)
+    {
+        string prompt = GetRandomPrompt();
+        Console.WriteLine($"\nPrompt: {prompt}");
+        Console.Write("Your response: ");
+        string response = Console.ReadLine();
+
+        string mood = ChooseMood();
+
+        Entry newEntry = new Entry(prompt, response, mood);
+        journal.AddEntry(newEntry);
+    }
+
+    static string GetRandomPrompt()
+    {
+        Random rand = new Random();
+        return prompts[rand.Next(prompts.Count)];
+    }
+
+    static string ChooseMood()
+    {
+        Console.WriteLine("Select your mood:");
+        for (int i = 0; i < moods.Count; i++)
+        {
+            Console.WriteLine($"{i + 1}. {moods[i]}");
+        }
+
+        int moodIndex;
+        while (true)
+        {
+            Console.Write("Enter number (1–5): ");
+            if (int.TryParse(Console.ReadLine(), out moodIndex) && moodIndex >= 1 && moodIndex <= moods.Count)
             {
-                Entry entry = new Entry();
-                entry.Display();
+                return moods[moodIndex - 1];
             }
-            else if (choice == 2)
-            {
-                if (journal.Entries.Count == 0)
-                {
-                    Console.WriteLine("No entries to display.");
-                }
-                else
-                {
-                    journal.DisplayAll();
-                }
-            }
-            else if (choice == 3)
-            {
-                Console.Write("Enter the filename to save entries:");
-                string filename = Console.ReadLine();
-                journal.SaveToFile(filename);
-                Console.WriteLine("Entries saved");
-            }
-            else if (choice == 4)
-            {
-                Console.Write("Enter the filename to load entries from:");
-                string filename = Console.ReadLine();
-                journal.LoadFromFile(filename);
-                Console.WriteLine("Entries loaded");
-            }
-            else if (choice == 5)
-            {
-                quit = 5;
-            }
-        } while (quit != 5);
+            Console.WriteLine("Invalid selection. Please try again.");
+        }
     }
 }

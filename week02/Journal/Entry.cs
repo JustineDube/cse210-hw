@@ -1,18 +1,31 @@
-using System;
-
-class Entry
+public class Entry
 {
-    public string _date;
-    public string _prompt;
-    public string _entryText;
+    public string Date { get; set; }
+    public string Prompt { get; set; }
+    public string Response { get; set; }
+    public string Mood { get; set; } // New creative addition
 
-    public void Display()
+    public Entry(string prompt, string response, string mood)
     {
-        PromptGenerator prompt = new PromptGenerator();
-        _date = DateTime.Now.ToString("MM/dd/yyyy");
-        Console.WriteLine("Enter something");
-        Console.Write(">>");
-        _entryText = Console.ReadLine();
-        _date = DateTime.Now.ToString("MM/dd/yyyy");
+        Date = DateTime.Now.ToString("yyyy-MM-dd");
+        Prompt = prompt;
+        Response = response;
+        Mood = mood;
+    }
+
+    public override string ToString()
+    {
+        return $"Date: {Date}\nMood: {Mood}\nPrompt: {Prompt}\nResponse: {Response}\n";
+    }
+
+    public string ToFileFormat()
+    {
+        return $"{Date}|{Mood}|{Prompt}|{Response}";
+    }
+
+    public static Entry FromFileFormat(string line)
+    {
+        var parts = line.Split('|');
+        return new Entry(parts[2], parts[3], parts[1]) { Date = parts[0] };
     }
 }

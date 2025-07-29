@@ -1,47 +1,40 @@
-using System;
+using System.Collections.Generic;
 using System.IO;
 
-class Journal
+public class Journal
 {
-    public List<Entry> Entries = new List<Entry>();
+    private List<Entry> entries = new List<Entry>();
 
-    public void AddEntry(Entry newEntry)
+    public void AddEntry(Entry entry)
     {
-
-        Entries.Add(newEntry);
+        entries.Add(entry);
     }
-    public void DisplayAll()
+
+    public void DisplayEntries()
     {
-        foreach (Entry entry in Entries)
+        foreach (var entry in entries)
         {
-            Console.WriteLine($"Date: {entry._date}");
-            Console.WriteLine($"Prompt: {entry._prompt}");
-            Console.WriteLine($"Entry: {entry._entryText}");
-            Console.WriteLine("-----------------------------");
+            Console.WriteLine(entry);
         }
     }
 
     public void SaveToFile(string filename)
     {
-        using (StreamWriter outputFile = new StreamWriter(filename))
+        using (StreamWriter writer = new StreamWriter(filename))
         {
-            foreach (Entry entry in Entries)
+            foreach (var entry in entries)
             {
-                outputFile.WriteLine($"{entry._date}: {entry._prompt}: {entry._entryText}");
+                writer.WriteLine(entry.ToFileFormat());
             }
         }
     }
 
     public void LoadFromFile(string filename)
     {
-        string[] lines = System.IO.File.ReadAllLines(filename);
-        foreach (string line in lines)
+        entries.Clear();
+        foreach (var line in File.ReadAllLines(filename))
         {
-            string[] parts = line.Split(":");
-
-            string date = parts[0];
-            string prompt = parts[1];
-            string entry = parts[2];
+            entries.Add(Entry.FromFileFormat(line));
         }
     }
 }
